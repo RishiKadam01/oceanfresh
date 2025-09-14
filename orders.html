@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OceanFresh - Orders Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+  <!-- Header -->
+  <header class="bg-blue-900 text-white p-4">
+    <h1 class="text-2xl font-bold">📦 Orders Dashboard</h1>
+  </header>
+
+  <!-- Orders Table -->
+  <main class="p-6">
+    <div class="bg-white rounded-lg shadow p-4">
+      <h2 class="text-xl font-semibold mb-4">All Orders</h2>
+      <table class="min-w-full border-collapse border border-gray-300">
+        <thead>
+          <tr class="bg-blue-100">
+            <th class="border border-gray-300 px-4 py-2">ID</th>
+            <th class="border border-gray-300 px-4 py-2">Customer</th>
+            <th class="border border-gray-300 px-4 py-2">Address</th>
+            <th class="border border-gray-300 px-4 py-2">Phone</th>
+            <th class="border border-gray-300 px-4 py-2">Items</th>
+            <th class="border border-gray-300 px-4 py-2">Total</th>
+            <th class="border border-gray-300 px-4 py-2">Date</th>
+          </tr>
+        </thead>
+        <tbody id="ordersTable" class="text-sm"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    async function fetchOrders() {
+      try {
+        const res = await fetch("http://localhost:3000/orders");
+        const data = await res.json();
+
+        if (!data.success) {
+          alert("❌ Failed to load orders");
+          return;
+        }
+
+        const table = document.getElementById("ordersTable");
+        table.innerHTML = "";
+
+        data.data.forEach(order => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td class="border border-gray-300 px-4 py-2">${order.id}</td>
+            <td class="border border-gray-300 px-4 py-2">${order.customer_name}</td>
+            <td class="border border-gray-300 px-4 py-2">${order.customer_address}</td>
+            <td class="border border-gray-300 px-4 py-2">${order.customer_phone}</td>
+            <td class="border border-gray-300 px-4 py-2">
+              ${JSON.parse(order.order_items).map(item => `${item.name} (₹${item.price})`).join("<br>")}
+            </td>
+            <td class="border border-gray-300 px-4 py-2">₹${order.total_price}</td>
+            <td class="border border-gray-300 px-4 py-2">${new Date(order.created_at).toLocaleString()}</td>
+          `;
+          table.appendChild(tr);
+        });
+      } catch (err) {
+        console.error("Error:", err);
+        alert("⚠️ Could not fetch orders. Make sure backend is running.");
+      }
+    }
+
+    // Load orders when page opens
+    fetchOrders();
+  </script>
+</body>
+</html>
