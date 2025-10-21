@@ -10,7 +10,7 @@ app.use(express.json());
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "rk12345",  // change to your MySQL root password
+  password: "",  // change to your MySQL root password
   database: "oceanfresh"
 });
 
@@ -57,3 +57,4 @@ app.get("/orders", (req, res) => {
 
 // Start Server
 app.listen(3000, () => console.log("🚀 Server running at http://localhost:3000"));
+
